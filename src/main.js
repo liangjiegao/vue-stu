@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Table, TableColumn } from 'element-ui'
+import { Table, TableColumn, Pagination, Button, Input, Message, Dropdown, DropdownMenu, DropdownItem } from 'element-ui'
 import axios from 'axios'
 import qs from 'qs'
 
@@ -12,7 +12,15 @@ Vue.prototype.$axios = axios
 Vue.prototype.qs = qs
 
 Vue.config.productionTip = false
-Vue.use(Table, TableColumn)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Pagination)
+Vue.use(Button)
+Vue.use(Input)
+Vue.use(Message)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(Dropdown)
 
 /* eslint-disable no-new */
 new Vue({
