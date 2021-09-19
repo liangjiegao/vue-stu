@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Table, TableColumn, Pagination, Button, Input, Message, Dropdown, DropdownMenu, DropdownItem } from 'element-ui'
+import { Table, TableColumn, Pagination, Button, Input, Message, Dropdown, DropdownMenu, DropdownItem, Tree } from 'element-ui'
 import axios from 'axios'
 import qs from 'qs'
 
@@ -21,6 +21,10 @@ Vue.use(Message)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Dropdown)
+Vue.use(Tree)
+
+import global_ from './Global'//引用文件
+Vue.prototype.GLOBAL = global_//挂载到Vue实例上面
 
 /* eslint-disable no-new */
 new Vue({

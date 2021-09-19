@@ -29,7 +29,7 @@
           type="text"
           size="small"
           >
-          修改菜单
+          修改角色
           </el-button>
           <el-button
             @click.native.prevent="editRole(scope.row)"
@@ -39,9 +39,6 @@
             添加权限
           </el-button>
         </template>
-<!--        <el-button type="success" @click="customClick" >修改菜单</el-button>-->
-
-<!--        <el-button type="success" v-on="edit_menu">修改菜单</el-button>-->
       </el-table-column>
     </el-table>
     <div class="block">
@@ -52,89 +49,120 @@
         :total="totalPage">
       </el-pagination>
     </div>
+    <el-tree
+      :data="data"
+      show-checkbox
+      node-key="m_key"
+      :default-expanded-keys="[2, 3]"
+      :default-checked-keys="[5]"
+      :props="defaultProps">
+    </el-tree>
   </div>
 </template>
 
 <script>
 import {Message} from 'element-ui'
 
-var role = [];
-var totalPage = 0;
-var currentPage = 0;
+var role = []
+var totalPage = 0
+var menuTree = []
 export default {
-  created(){
-    this.getData(1);
+  created () {
+    this.getData(1)
+    this.getMenu()
   },
   data () {
     return {
       tableData: role,
-      totalPage:totalPage,
+      totalPage: totalPage,
       input1: '',
       input2: '',
+      data: menuTree,
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      }
     }
   },
   methods: {
-    editRole(row){
-      this.input1 = row.name;
-      this.input2 = row.r_key;
+    editRole (row) {
+      this.input1 = row.name
+      this.input2 = row.r_key
     },
-    addRole(e){
+    addRole (e) {
       this.$axios({
         method: 'post',
         url: '/role/addRole',
         data: {
-          token: 'mc_boao_a47b1c55f7f22d610e05f0907a809b73',
+          token: this.GLOBAL.token,
           name: this.input1,
-          r_key: this.input2,
+          r_key: this.input2
         },
-        timeout: 10000,
+        timeout: 10000
 
-      }).then((response) =>{
-        Message.success(response.data.msg);
+      }).then((response) => {
+        Message.success(response.data.msg)
 
-        if (response.data.code === 10000){
-          this.input1 = '';
-          this.input2 = '';
-          role = [];
+        if (response.data.code === 10000) {
+          this.input1 = ''
+          this.input2 = ''
+          role = []
           this.getData(this.currentPage)
         }
-
-      });
+      })
     },
-    current_change:function(currentPage){ // 下一页
-      role = [];
+    current_change: function (currentPage) { // 下一页
+      role = []
 
-      this.getData(currentPage);
+      this.getData(currentPage)
     },
-    getData(page){
-      this.currentPage = page;
+    getData (page) {
+      this.currentPage = page
       this.$axios({
-        method:'get',
-        url:'/role/getRoleList?page=' + page +'&count=10&token=mc_boao_a47b1c55f7f22d610e05f0907a809b73',
-        data:this.qs.stringify({    //这里是发送给后台的数据
-          userId:this.userId,
-          token:this.token,
-        })
-      }).then((response) =>{          //这里使用了ES6的语法
-        Message.info(response.data.msg);
-        if (response.data.code === 10000){
-          var data = response.data.data;
+        method: 'get',
+        url: '/role/getRoleList?page=' + page + '&count=10&token=' + this.GLOBAL.token
+      }).then((response) => { // 这里使用了ES6的语法
+        Message.info(response.data.msg)
+        if (response.data.code === 10000) {
+          var data = response.data.data
           var list = data.list
-          this.totalPage = data.count;
-          list.forEach(function(item) {
+          this.totalPage = data.count
+          list.forEach(function (item) {
             role.push({
               name: item.name,
-              r_key: item.r_key,
+              r_key: item.r_key
             })
           })
-          this.tableData  = role
+          this.tableData = role
         }
-
-
-      }).catch((error) =>{
-        console.log(error)       //请求失败返回的数据
+      }).catch((error) => {
+        console.log(error) // 请求失败返回的数据
+      })
+    },
+    getMenu () {
+      this.$axios({
+        method: 'get',
+        url: '/menu/getMenuList?make_tree=true&token=' + this.GLOBAL.token
+      }).then((response) => { // 这里使用了ES6的语法
+        if (response.data.code === 10000) {
+          var data = response.data.data
+          var list = data.list
+          list.forEach(function (item) {
+            menuTree.push({
+              label: item.label,
+              m_key: item.m_key,
+              children: item.children
+            })
+          })
+          this.data = menuTree
+        } else {
+          this.$message(response.data.msg)
+        }
+      }).catch((error) => {
+        console.log(error) // 请求失败返回的数据
       })
     }
+
   }
 
 }
